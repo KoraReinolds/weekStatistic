@@ -1,20 +1,29 @@
 <template>
-  <LineChart
+  <line-chart
     :chartData="chartData"
     :chartOptions="{
       responsive: false,
     }"
   />
+  <product
+    :product="{
+      name: 'каша',
+      bju: [70, 20, 10],
+    }"
+  />
+
 </template>
 
 <script>
 import { defineComponent } from 'vue';
 import LineChart from '@/components/LineChart';
+import Product from '@/components/Product.vue';
 
 export default defineComponent({
   name: 'App',
   components: {
     LineChart,
+    Product,
   },
   setup() {
     return {
