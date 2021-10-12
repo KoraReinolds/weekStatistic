@@ -3,12 +3,16 @@
     class="timeline"
   >
     <span
-      class="section"
+      :class="[
+        'section',
+        { current: currentDay === section.data }
+      ]"
       v-for="(section, index) in timeLineData"
       :key="`section-${index}`"
     >
       <span
         class="date"
+        @click="$emit('changeCurDay', section.data)"
       >
         {{ section.data }}
       </span>
@@ -31,6 +35,9 @@ export default defineComponent({
   props: {
     timeLineData: {
       type: Array,
+    },
+    currentDay: {
+      type: String,
     },
   },
   setup() {
@@ -56,4 +63,7 @@ export default defineComponent({
 
     .date
       padding: 20px;
+
+    &.current
+      background-color: lightgreen
 </style>

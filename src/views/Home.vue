@@ -5,17 +5,26 @@
       responsive: false,
     }"
   />
-  <product
-    :product="product"
-  />
+  <span
+    class="product"
+    v-for="(product, id) in products"
+    :key="id"
+  >
+    <product
+      @add="addToCurrentDay"
+      :product="product"
+    />
+  </span>
   <time-line
+    :currentDay="currentDay"
     :timeLineData="timeLineData"
+    @changeCurDay="changeCurDay"
   />
 
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import LineChart from '@/components/LineChart';
 import Product from '@/components/Product.vue';
 import TimeLine from '@/components/TimeLine.vue';
@@ -28,21 +37,34 @@ export default defineComponent({
     TimeLine,
   },
   setup() {
-    const product = {
-      name: 'каша',
-      bju: [70, 20, 10],
+    const dateToString = (d) => d.toISOString().split('T')[0].split('-').slice(1, 3).join('/');
+    const currentDay = ref(dateToString(new Date()));
+    const products = {
+      kashsa: {
+        id: 'kashsa',
+        name: 'каша',
+        bju: [70, 20, 10],
+      },
+      ris: {
+        id: 'ris',
+        name: 'рис',
+        bju: [50, 10, 20],
+      },
     };
     const days = [...Array(7).keys()].map((i) => {
-      const today = +new Date() + i * 24 * 3600 * 1000;
+      const today = +new Date() + (i - 3) * 24 * 3600 * 1000;
       return new Date(today);
     });
-    const labels = days.map((d) => d.toISOString().split('T')[0].split('-').slice(1, 3).join('/'));
+    const labels = days.map(dateToString);
     const timeLineData = labels.map((data) => ({
       data,
-      food: [product],
+      food: [],
     }));
     return {
-      product,
+      currentDay,
+      changeCurrentDay: (day) => { currentDay.value = day; },
+      addToCurrentDay: (id) => console.log(id),
+      products,
       timeLineData,
       chartData: {
         labels,
@@ -72,4 +94,6 @@ export default defineComponent({
 });
 </script>
 <style lang="stylus">
+.product
+  margin-right: 20px
 </style>

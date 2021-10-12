@@ -1,5 +1,7 @@
 <template>
-  <div
+  <span
+    class="product"
+    @click="$emit('add', product.id)"
   >
     <span
       class="name"
@@ -7,24 +9,11 @@
       {{ product.name }}
     </span>
     <span
-      class="nutr b"
+      class="nutr"
     >
-      {{ product.bju[0] }}
+      ({{ product.bju[0] }}/{{ product.bju[1] }}/{{ product.bju[2] }})
     </span>
-    <span
-      class="nutr j"
-    >
-      {{ product.bju[1] }}
-    </span>
-    <span
-      class="nutr u"
-    >
-      {{ product.bju[2] }}
-    </span>
-    <button>
-      Add
-    </button>
-  </div>
+  </span>
 </template>
 
 <script>
@@ -44,6 +33,6 @@ export default defineComponent({
 });
 </script>
 <style lang="stylus">
-  .nutr
-    padding: 0 5px
+.product
+  cursor: pointer
 </style>
