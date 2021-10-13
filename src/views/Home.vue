@@ -18,13 +18,14 @@
   <time-line
     :currentDay="currentDay"
     :timeLineData="timeLineData"
-    @changeCurDay="changeCurDay"
+    @changeCurDay="changeCurrentDay"
   />
 
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue';
+import { defineComponent, computed } from 'vue';
+import { useStore } from 'vuex';
 import LineChart from '@/components/LineChart';
 import Product from '@/components/Product.vue';
 import TimeLine from '@/components/TimeLine.vue';
@@ -37,33 +38,19 @@ export default defineComponent({
     TimeLine,
   },
   setup() {
-    const dateToString = (d) => d.toISOString().split('T')[0].split('-').slice(1, 3).join('/');
-    const currentDay = ref(dateToString(new Date()));
-    const products = {
-      kashsa: {
-        id: 'kashsa',
-        name: 'каша',
-        bju: [70, 20, 10],
-      },
-      ris: {
-        id: 'ris',
-        name: 'рис',
-        bju: [50, 10, 20],
-      },
-    };
-    const days = [...Array(7).keys()].map((i) => {
-      const today = +new Date() + (i - 3) * 24 * 3600 * 1000;
-      return new Date(today);
-    });
-    const labels = days.map(dateToString);
-    const timeLineData = labels.map((data) => ({
-      data,
-      food: [],
-    }));
+    const store = useStore();
+    const {
+      products, labels,
+    } = store.state;
+
+    const currentDay = computed(() => store.state.currentDay);
+
+    const timeLineData = computed(() => store.getters.timeLineData);
+
     return {
       currentDay,
-      changeCurrentDay: (day) => { currentDay.value = day; },
-      addToCurrentDay: (id) => console.log(id),
+      changeCurrentDay: (day) => store.commit('CHANGE_CURRENT_DAY', day),
+      addToCurrentDay: (id) => store.commit('ADD_FOOD', { day: currentDay.value, id }),
       products,
       timeLineData,
       chartData: {
