@@ -11,7 +11,7 @@ export default defineComponent({
     },
     chartOptions: {
       type: Object,
-      required: false,
+      required: true,
     },
   },
   mounted() {

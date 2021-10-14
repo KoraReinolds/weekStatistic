@@ -1,10 +1,14 @@
 <template>
-  <line-chart
-    :chartData="chartData"
-    :chartOptions="{
-      responsive: false,
-    }"
-  />
+  <div
+    class="chart"
+  >
+    <line-chart
+      :chartData="chartData"
+      :chartOptions="{
+        responsive: true,
+      }"
+    />
+  </div>
   <span
     class="product"
     v-for="(product, id) in products"
@@ -39,13 +43,10 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const {
-      products, labels,
-    } = store.state;
-
+    const { products } = store.state;
     const currentDay = computed(() => store.state.currentDay);
-
     const timeLineData = computed(() => store.getters.timeLineData);
+    const chartData = computed(() => store.getters.chartData);
 
     return {
       currentDay,
@@ -53,34 +54,14 @@ export default defineComponent({
       addToCurrentDay: (id) => store.commit('ADD_FOOD', { day: currentDay.value, id }),
       products,
       timeLineData,
-      chartData: {
-        labels,
-        datasets: [
-          {
-            label: 'белки',
-            borderColor: '#BBBDB9',
-            backgroundColor: 'transparent',
-            data: [40, 20, 12, 39, 10, 40, 39],
-          },
-          {
-            label: 'жиры',
-            borderColor: '#FADA05',
-            backgroundColor: 'transparent',
-            data: [50, 30, 52, 19, 20, 40, 39],
-          },
-          {
-            label: 'углеводы',
-            borderColor: '#7A5A62',
-            backgroundColor: 'transparent',
-            data: [20, 30, 52, 59, 40, 10, 39],
-          },
-        ],
-      },
+      chartData,
     };
   },
 });
 </script>
 <style lang="stylus">
+.chart
+  max-width: 500px
 .product
   margin-right: 20px
 </style>

@@ -42,6 +42,45 @@ export default createStore({
         food,
       };
     }),
+    chartData: (state) => {
+      const { proteins, fats, carbohydrates } = state.labels.reduce((sum, cur) => {
+        const nutrs = sum || { proteins: [], fats: [], carbohydrates: [] };
+        const food = state.dayActivity[cur]?.food || [];
+        const nutrsDay = food.reduce(
+          (nutrsSum, { id }) => nutrsSum.map(
+            (value, i) => value + state.products[id].bju[i],
+          ),
+          [0, 0, 0],
+        );
+        nutrs.proteins.push(nutrsDay[0]);
+        nutrs.fats.push(nutrsDay[1]);
+        nutrs.carbohydrates.push(nutrsDay[2]);
+        return nutrs;
+      }, null);
+      return {
+        labels: state.labels,
+        datasets: [
+          {
+            label: 'белки',
+            borderColor: '#BBBDB9',
+            backgroundColor: 'transparent',
+            data: proteins,
+          },
+          {
+            label: 'жиры',
+            borderColor: '#FADA05',
+            backgroundColor: 'transparent',
+            data: fats,
+          },
+          {
+            label: 'углеводы',
+            borderColor: '#7A5A62',
+            backgroundColor: 'transparent',
+            data: carbohydrates,
+          },
+        ],
+      };
+    },
   },
   mutations: {
     CHANGE_CURRENT_DAY: (state, day) => { state.currentDay = day; },
