@@ -14,6 +14,9 @@ export default defineComponent({
       required: true,
     },
   },
+  watch: {
+    chartData() { this.renderChart(this.chartData, this.chartOptions); },
+  },
   mounted() {
     this.renderChart(this.chartData, this.chartOptions);
   },

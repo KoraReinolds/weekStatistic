@@ -15,20 +15,22 @@ export default createStore({
       kasha: {
         id: 'kasha',
         name: 'каша',
-        bju: [70, 20, 10],
+        bju: [12, 6, 51],
       },
       ris: {
         id: 'ris',
         name: 'рис',
-        bju: [50, 10, 20],
+        bju: [12, 6, 51],
       },
     },
     dayActivity: {
       '10/10': {
         food: [{
           id: 'kasha',
+          ratio: 1,
         }, {
           id: 'ris',
+          ratio: 1,
         }],
       },
     },
@@ -89,7 +91,6 @@ export default createStore({
       const food = { id };
       if (!d) state.dayActivity[day] = { food: [] };
       state.dayActivity[day].food.push(food);
-      console.log(state.dayActivity);
     },
   },
   actions: {

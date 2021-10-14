@@ -1,24 +1,26 @@
 <template>
-  <div
-    class="chart"
-  >
-    <line-chart
-      :chartData="chartData"
-      :chartOptions="{
-        responsive: true,
-      }"
-    />
+  <div class="header">
+    <div class="chart">
+      <line-chart
+        :chartData="chartData"
+        :chartOptions="{
+          responsive: true,
+        }"
+      />
+    </div>
+    <div class="products">
+      <span
+        class="product"
+        v-for="(product, id) in products"
+        :key="id"
+      >
+        <product
+          @add="addToCurrentDay"
+          :product="product"
+        />
+      </span>
+    </div>
   </div>
-  <span
-    class="product"
-    v-for="(product, id) in products"
-    :key="id"
-  >
-    <product
-      @add="addToCurrentDay"
-      :product="product"
-    />
-  </span>
   <time-line
     :currentDay="currentDay"
     :timeLineData="timeLineData"
@@ -60,8 +62,14 @@ export default defineComponent({
 });
 </script>
 <style lang="stylus">
+.header
+  display: flex
 .chart
   max-width: 500px
 .product
-  margin-right: 20px
+  text-align: left
+.products
+  margin-left: 20px
+  display: flex
+  flex-direction: column
 </style>
