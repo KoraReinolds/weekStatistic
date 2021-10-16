@@ -16,24 +16,64 @@ export default createStore({
         id: 'kasha',
         name: 'каша',
         bju: [12, 6, 51],
+        defaultRatio: 0.5,
       },
       ris: {
         id: 'ris',
         name: 'рис',
-        bju: [12, 6, 51],
+        bju: [7.2, 1, 74],
+        defaultRatio: 0.8,
+      },
+      nemoloko: {
+        id: 'nemoloko',
+        name: 'немолоко (3.2)',
+        bju: [1, 3.2, 6.5],
+        defaultRatio: 1.0,
+      },
+      mindal: {
+        id: 'mindal',
+        name: 'миндаль',
+        bju: [18.6, 53.7, 13],
+        defaultRatio: 0.5,
+      },
+      peanut: {
+        id: 'peanut',
+        name: 'арахис',
+        bju: [26, 52, 13.4],
+        defaultRatio: 0.5,
+      },
+      chicken: {
+        id: 'chicken',
+        name: 'курица',
+        bju: [18.1, 1.8, 0.4],
+        defaultRatio: 1.0,
+      },
+      milk: {
+        id: 'milk',
+        name: 'молоко',
+        bju: [2.9, 2.5, 4.8],
+        defaultRatio: 0.1,
+      },
+      yelli_1: {
+        id: 'yelli_1',
+        name: 'Суп Турецкий с Булгуром [Yelli]',
+        bju: [19, 1.5, 54],
+        defaultRatio: 0.5,
+      },
+      yelli_2: {
+        id: 'yelli_2',
+        name: 'Суп Турецкий с Булгуром [Yelli]',
+        bju: [8.8, 1.1, 73],
+        defaultRatio: 0.75,
+      },
+      egg: {
+        id: 'egg',
+        name: 'яйцо',
+        bju: [12.7, 11.5, 0.7],
+        defaultRatio: 0.62,
       },
     },
-    dayActivity: {
-      '10/10': {
-        food: [{
-          id: 'kasha',
-          ratio: 1,
-        }, {
-          id: 'ris',
-          ratio: 1,
-        }],
-      },
-    },
+    dayActivity: JSON.parse(localStorage.getItem('dayActivity')),
   },
   getters: {
     timeLineData: (state) => state.labels.map((data) => {
@@ -49,8 +89,8 @@ export default createStore({
         const nutrs = sum || { proteins: [], fats: [], carbohydrates: [] };
         const food = state.dayActivity[cur]?.food || [];
         const nutrsDay = food.reduce(
-          (nutrsSum, { id }) => nutrsSum.map(
-            (value, i) => value + state.products[id].bju[i],
+          (nutrsSum, { id, ratio }) => nutrsSum.map(
+            (value, i) => value + state.products[id].bju[i] * ratio,
           ),
           [0, 0, 0],
         );
@@ -88,9 +128,11 @@ export default createStore({
     CHANGE_CURRENT_DAY: (state, day) => { state.currentDay = day; },
     ADD_FOOD: (state, { day, id }) => {
       const d = state.dayActivity[day];
-      const food = { id };
+      const product = state.products[id];
+      const food = { id, ratio: product.defaultRatio };
       if (!d) state.dayActivity[day] = { food: [] };
       state.dayActivity[day].food.push(food);
+      localStorage.setItem('dayActivity', JSON.stringify(state.dayActivity));
     },
   },
   actions: {
