@@ -46,7 +46,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const { products } = store.state;
-    const currentDay = computed(() => store.state.currentDay);
+    const currentDay = computed(() => store.getters.currentDay);
     const timeLineData = computed(() => store.getters.timeLineData);
     const chartData = computed(() => store.getters.chartData);
 

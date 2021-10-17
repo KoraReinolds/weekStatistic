@@ -1,21 +1,15 @@
 import { createStore } from 'vuex';
 
-const days = [...Array(7).keys()].map((i) => {
-  const today = +new Date() + (i - 3) * 24 * 3600 * 1000;
-  return new Date(today);
-});
-
 const dateToString = (d) => d.toISOString().split('T')[0].split('-').slice(1, 3).join('/');
 
 export default createStore({
   state: {
-    currentDay: dateToString(new Date()),
-    labels: days.map(dateToString),
+    currentDay: new Date(),
     products: {
       kasha: {
         id: 'kasha',
         name: 'каша',
-        bju: [12, 6, 51],
+        bju: [13, 7, 60],
         defaultRatio: 0.5,
       },
       ris: {
@@ -56,13 +50,13 @@ export default createStore({
       },
       yelli_1: {
         id: 'yelli_1',
-        name: 'Суп Турецкий с Булгуром [Yelli]',
+        name: 'суп с Булгуром Yelli',
         bju: [19, 1.5, 54],
         defaultRatio: 0.5,
       },
       yelli_2: {
         id: 'yelli_2',
-        name: 'Суп Турецкий с Булгуром [Yelli]',
+        name: 'суп рис + кокос Yelli',
         bju: [8.8, 1.1, 73],
         defaultRatio: 0.75,
       },
@@ -72,11 +66,25 @@ export default createStore({
         bju: [12.7, 11.5, 0.7],
         defaultRatio: 0.62,
       },
+      sandwich: {
+        id: 'sandwich',
+        name: 'бутер с сыром и колбасой',
+        bju: [8.6, 10, 15.6],
+        defaultRatio: 1,
+      },
     },
-    dayActivity: JSON.parse(localStorage.getItem('dayActivity')),
+    dayActivity: JSON.parse(localStorage.getItem('dayActivity')) || {},
   },
   getters: {
-    timeLineData: (state) => state.labels.map((data) => {
+    currentDay: (state) => dateToString(state.currentDay),
+    labels: (state) => {
+      const days = [...Array(7).keys()].map((i) => {
+        const today = +state.currentDay + (i - 3) * 24 * 3600 * 1000;
+        return new Date(today);
+      });
+      return days.map(dateToString);
+    },
+    timeLineData: (state, getters) => getters.labels.map((data) => {
       const dayData = state.dayActivity[data] || {};
       const food = dayData?.food?.map((f) => state.products[f.id]);
       return {
@@ -84,8 +92,8 @@ export default createStore({
         food,
       };
     }),
-    chartData: (state) => {
-      const { proteins, fats, carbohydrates } = state.labels.reduce((sum, cur) => {
+    chartData: (state, getters) => {
+      const { proteins, fats, carbohydrates } = getters.labels.reduce((sum, cur) => {
         const nutrs = sum || { proteins: [], fats: [], carbohydrates: [] };
         const food = state.dayActivity[cur]?.food || [];
         const nutrsDay = food.reduce(
@@ -100,7 +108,7 @@ export default createStore({
         return nutrs;
       }, null);
       return {
-        labels: state.labels,
+        labels: getters.labels,
         datasets: [
           {
             label: 'белки',
@@ -125,7 +133,13 @@ export default createStore({
     },
   },
   mutations: {
-    CHANGE_CURRENT_DAY: (state, day) => { state.currentDay = day; },
+    CHANGE_CURRENT_DAY: (state, day) => {
+      const [m, d] = day.split('/');
+      const date = new Date();
+      date.setMonth(m - 1);
+      date.setDate(+d + 1);
+      state.currentDay = date;
+    },
     ADD_FOOD: (state, { day, id }) => {
       const d = state.dayActivity[day];
       const product = state.products[id];
