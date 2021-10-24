@@ -138,6 +138,12 @@ export default createStore({
     },
   },
   mutations: {
+    DELETE_FOOD: (state, { section, id }) => {
+      const { food } = state.dayActivity[section.data];
+      const index = food.findIndex(({ id: foodId }) => foodId === id);
+      if (index >= 0) food.splice(index);
+      localStorage.setItem('dayActivity', JSON.stringify(state.dayActivity));
+    },
     ADD_FOOD_TO_OTHER_DAY: (state, params) => {
       console.log(params);
     },

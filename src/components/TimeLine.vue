@@ -30,6 +30,9 @@
         <span
           class="name"
           v-text="`${food.name} - ${food.defaultRatio}`"
+          @click="deleteFood({
+            section, id: food.id
+          })"
         />
         <span
           :class="['next', {
@@ -70,6 +73,7 @@ export default defineComponent({
       foodListByIndex,
       addFoodToOtherDay: (params) => store.commit('ADD_FOOD_TO_OTHER_DAY', params),
       changeCurrentDay: (day) => store.commit('CHANGE_CURRENT_DAY', day),
+      deleteFood: (params) => store.commit('DELETE_FOOD', params),
     };
   },
 });
