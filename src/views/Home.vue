@@ -24,7 +24,6 @@
   <time-line
     :currentDay="currentDay"
     :timeLineData="timeLineData"
-    @changeCurDay="changeCurrentDay"
   />
 
 </template>
@@ -52,7 +51,6 @@ export default defineComponent({
 
     return {
       currentDay,
-      changeCurrentDay: (day) => store.commit('CHANGE_CURRENT_DAY', day),
       addToCurrentDay: (id) => store.commit('ADD_FOOD', { day: currentDay.value, id }),
       products,
       timeLineData,

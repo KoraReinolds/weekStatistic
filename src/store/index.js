@@ -86,7 +86,12 @@ export default createStore({
     },
     timeLineData: (state, getters) => getters.labels.map((data) => {
       const dayData = state.dayActivity[data] || {};
-      const food = dayData?.food?.map((f) => state.products[f.id]);
+      const food = dayData?.food?.reduce(
+        (productMap, f) => {
+          const product = state.products[f.id];
+          return { ...productMap, [product.id]: product };
+        }, {},
+      );
       return {
         data,
         food,
@@ -133,11 +138,15 @@ export default createStore({
     },
   },
   mutations: {
+    ADD_FOOD_TO_OTHER_DAY: (state, params) => {
+      console.log(params);
+    },
     CHANGE_CURRENT_DAY: (state, day) => {
+      console.log(state.dayActivity);
       const [m, d] = day.split('/');
       const date = new Date();
-      date.setMonth(m - 1);
-      date.setDate(+d + 1);
+      date.setMonth(+m - 1);
+      date.setDate(+d);
       state.currentDay = date;
     },
     ADD_FOOD: (state, { day, id }) => {
