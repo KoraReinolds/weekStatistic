@@ -2,6 +2,14 @@ import { createStore } from 'vuex';
 
 const dateToString = (d) => d.toISOString().split('T')[0].split('-').slice(1, 3).join('/');
 
+const stringTodate = (day) => {
+  const [m, d] = day.split('/');
+  const date = new Date();
+  date.setMonth(+m - 1);
+  date.setDate(+d);
+  return date;
+};
+
 export default createStore({
   state: {
     currentDay: new Date(),
@@ -89,7 +97,11 @@ export default createStore({
       const food = dayData?.food?.reduce(
         (productMap, f) => {
           const product = state.products[f.id];
-          return { ...productMap, [product.id]: product };
+          product.weight = Math.floor((f.ratio * 100) / f.parts);
+          return {
+            ...productMap,
+            [product.id]: product,
+          };
         }, {},
       );
       return {
@@ -144,21 +156,38 @@ export default createStore({
       if (index >= 0) food.splice(index);
       localStorage.setItem('dayActivity', JSON.stringify(state.dayActivity));
     },
-    ADD_FOOD_TO_OTHER_DAY: (state, params) => {
-      console.log(params);
+    ADD_FOOD_TO_OTHER_DAY: (state, { section, food }) => {
+      const curDayFoodList = state.dayActivity[section.data].food;
+      const findFoodById = (list) => list.find((f) => f.id === food.id);
+      const curFood = findFoodById(curDayFoodList);
+      let parts = curFood.parts + 1;
+
+      const delta = 1000 * 3600 * 24;
+      const newDate = new Date(+stringTodate(section.data) + delta);
+      const newDateStr = dateToString(newDate);
+      const dayActivity = state.dayActivity[newDateStr]
+        || (state.dayActivity[newDateStr] = { food: [] });
+      dayActivity.food.push({ ...curFood });
+      while (parts) {
+        parts -= 1;
+        const dayToChange = dateToString(new Date(+newDate - delta * parts));
+        const currentFoodList = state.dayActivity[dayToChange].food;
+        const foodToChange = findFoodById(currentFoodList);
+
+        foodToChange.parts += 1;
+      }
     },
     CHANGE_CURRENT_DAY: (state, day) => {
-      console.log(state.dayActivity);
-      const [m, d] = day.split('/');
-      const date = new Date();
-      date.setMonth(+m - 1);
-      date.setDate(+d);
-      state.currentDay = date;
+      state.currentDay = stringTodate(day);
     },
     ADD_FOOD: (state, { day, id }) => {
       const d = state.dayActivity[day];
       const product = state.products[id];
-      const food = { id, ratio: product.defaultRatio };
+      const food = {
+        id,
+        ratio: product.defaultRatio,
+        parts: 1,
+      };
       if (!d) state.dayActivity[day] = { food: [] };
       state.dayActivity[day].food.push(food);
       localStorage.setItem('dayActivity', JSON.stringify(state.dayActivity));

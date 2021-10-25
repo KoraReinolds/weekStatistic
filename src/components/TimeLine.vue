@@ -22,23 +22,19 @@
         :key="`food-${foodIndex}`"
       >
         <span
-          :class="['prev', {
-            hide: foodListByIndex(dateIndex - 1).includes(food.id)
-          }]"
-          v-text="'<'"
-        />
-        <span
           class="name"
-          v-text="`${food.name} - ${food.defaultRatio}`"
+          v-text="`${food.name} - ${food.weight}g`"
           @click="deleteFood({
-            section, id: food.id
+            section, food
           })"
         />
         <span
           :class="['next', {
             hide: foodListByIndex(dateIndex + 1).includes(food.id)
           }]"
-          @click="addFoodToOtherDay"
+          @click="addFoodToOtherDay({
+            section, food
+          })"
           v-text="'>'"
         />
 
@@ -84,7 +80,6 @@ export default defineComponent({
   justify-content: space-between
   align-items: center
 
-.prev,
 .next
   cursor: pointer
   padding: 0 10px
