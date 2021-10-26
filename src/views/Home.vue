@@ -15,7 +15,6 @@
         :key="id"
       >
         <product
-          @add="addToCurrentDay"
           :product="product"
         />
       </span>
@@ -51,7 +50,6 @@ export default defineComponent({
 
     return {
       currentDay,
-      addToCurrentDay: (id) => store.commit('ADD_FOOD', { day: currentDay.value, id }),
       products,
       timeLineData,
       chartData,

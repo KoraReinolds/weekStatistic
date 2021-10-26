@@ -197,12 +197,14 @@ export default createStore({
     CHANGE_CURRENT_DAY: (state, day) => {
       state.currentDay = stringTodate(day);
     },
-    ADD_FOOD: (state, { day, id }) => {
+    ADD_FOOD: (state, { id, defaultRatio }) => {
+      // eslint-disable-next-line
+      const ratio = prompt('', defaultRatio);
+      const day = dateToString(state.currentDay);
       const d = state.dayActivity[day];
-      const product = state.products[id];
       const food = {
         id,
-        ratio: product.defaultRatio,
+        ratio,
         parts: 1,
       };
       if (!d) state.dayActivity[day] = { food: [] };

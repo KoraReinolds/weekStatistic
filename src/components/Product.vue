@@ -1,7 +1,7 @@
 <template>
   <span
     class="product"
-    @click="$emit('add', product.id)"
+    @click="addToCurrentDay(product)"
   >
     <span
       class="name"
@@ -18,6 +18,7 @@
 
 <script>
 import { defineComponent } from 'vue';
+import { useStore } from 'vuex';
 
 export default defineComponent({
   name: 'Product',
@@ -27,7 +28,10 @@ export default defineComponent({
     },
   },
   setup() {
+    const store = useStore();
+
     return {
+      addToCurrentDay: (p) => store.commit('ADD_FOOD', p),
     };
   },
 });
