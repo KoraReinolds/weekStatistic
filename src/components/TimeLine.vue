@@ -24,20 +24,27 @@
         <span
           class="name"
           v-text="`${food.name} - ${food.weight}g`"
-          @click="deleteFood({
-            section, food
-          })"
         />
-        <span
-          :class="['next', {
-            hide: foodListByIndex(dateIndex + 1).includes(food.id)
-          }]"
-          @click="addFoodToOtherDay({
-            section, food
-          })"
-          v-text="'>'"
-        />
-
+        <div class="actions">
+          <span
+            :class="['delete', {
+              hide: foodListByIndex(dateIndex + 1).includes(food.id)
+            }]"
+            @click="deleteFood({
+              section, id: food.id
+            })"
+            v-text="'X'"
+          />
+          <span
+            :class="['next', {
+              hide: foodListByIndex(dateIndex + 1).includes(food.id)
+            }]"
+            @click="addFoodToOtherDay({
+              section, food
+            })"
+            v-text="'>'"
+          />
+        </div>
       </span>
     </span>
   </div>
@@ -75,20 +82,35 @@ export default defineComponent({
 });
 </script>
 <style scoped lang="stylus">
+
 .food
   display: flex
-  justify-content: space-between
-  align-items: center
+  position: relative
+  width: 100%
 
-.next
+  .actions
+    display: block
+    left: 0
+    width: 100%
+    position: absolute
+    display: flex
+
+    .delete
+      background: red
+
+.next, .delete
+  width: 50%
+  opacity: 0
   cursor: pointer
-  padding: 0 10px
-  height: 100%
-  text-align: center
   &:hover
-    background-color: lightgreen
+    opacity: 0.5
   &.hide
     visibility: hidden
+
+.next
+  background: green
+  height: 100%
+  text-align: center
 
 .timeline
   margin: 30px;

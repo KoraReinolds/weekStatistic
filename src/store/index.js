@@ -1,6 +1,11 @@
 import { createStore } from 'vuex';
 
-const dateToString = (d) => d.toISOString().split('T')[0].split('-').slice(1, 3).join('/');
+const dateToString = (d) => (new Date(+d + 1000 * 3 * 3600))
+  .toISOString()
+  .split('T')[0]
+  .split('-')
+  .slice(1, 3)
+  .join('/');
 
 const stringTodate = (day) => {
   const [m, d] = day.split('/');
@@ -96,7 +101,7 @@ export default createStore({
       const dayData = state.dayActivity[data] || {};
       const food = dayData?.food?.reduce(
         (productMap, f) => {
-          const product = state.products[f.id];
+          const product = { ...state.products[f.id] };
           product.weight = Math.floor((f.ratio * 100) / f.parts);
           return {
             ...productMap,
@@ -153,7 +158,18 @@ export default createStore({
     DELETE_FOOD: (state, { section, id }) => {
       const { food } = state.dayActivity[section.data];
       const index = food.findIndex(({ id: foodId }) => foodId === id);
-      if (index >= 0) food.splice(index);
+      const q = food.splice(index);
+      const findFoodById = (list) => list.find((f) => f.id === id);
+      const delta = 1000 * 3600 * 24;
+      const newDate = new Date(+stringTodate(section.data) - delta);
+      let { parts } = q[0];
+      while (parts) {
+        parts -= 1;
+        const dayToChange = dateToString(new Date(+newDate - delta * parts));
+        const currentFoodList = state.dayActivity[dayToChange].food;
+        const foodToChange = findFoodById(currentFoodList);
+        if (foodToChange) foodToChange.parts -= 1;
+      }
       localStorage.setItem('dayActivity', JSON.stringify(state.dayActivity));
     },
     ADD_FOOD_TO_OTHER_DAY: (state, { section, food }) => {
@@ -166,7 +182,7 @@ export default createStore({
       const newDate = new Date(+stringTodate(section.data) + delta);
       const newDateStr = dateToString(newDate);
       const dayActivity = state.dayActivity[newDateStr]
-        || (state.dayActivity[newDateStr] = { food: [] });
+      || (state.dayActivity[newDateStr] = { food: [] });
       dayActivity.food.push({ ...curFood });
       while (parts) {
         parts -= 1;
@@ -176,6 +192,7 @@ export default createStore({
 
         foodToChange.parts += 1;
       }
+      localStorage.setItem('dayActivity', JSON.stringify(state.dayActivity));
     },
     CHANGE_CURRENT_DAY: (state, day) => {
       state.currentDay = stringTodate(day);
